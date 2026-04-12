@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>متجر الجداحات الفاخرة</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Noto+Naskh+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--black:#000;--crimson:#8B0000;--crimson-light:#b00000;--crimson-glow:#c0000033;--gold:#c9a84c;--white:#f5f0eb;--gray:#1a1a1a;--gray-mid:#2a2a2a;--text-muted:#888}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--black);color:var(--white);font-family:'Noto Naskh Arabic',serif;direction:rtl;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;opacity:.35}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1rem 1.5rem;background:linear-gradient(to bottom,rgba(0,0,0,.95),transparent);backdrop-filter:blur(2px)}
+.nav-logo{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--gold);text-decoration:none;display:flex;align-items:center;gap:.5rem}
+.nav-links{display:flex;gap:1.5rem;list-style:none}
+.nav-links a{color:var(--white);text-decoration:none;font-size:.9rem;opacity:.8;transition:.2s}
+.nav-links a:hover{opacity:1;color:var(--gold)}
+
+.hero{min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6rem 1.5rem 3rem;position:relative;overflow:hidden}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 60%,var(--crimson-glow) 0%,transparent 70%),radial-gradient(ellipse 40% 40% at 50% 80%,rgba(139,0,0,.15) 0%,transparent 60%)}
+.hero-line{width:1px;height:80px;background:linear-gradient(to bottom,transparent,var(--gold),transparent);margin:0 auto 2rem;animation:pulse-line 2s ease-in-out infinite}
+@keyframes pulse-line{0%,100%{opacity:.4}50%{opacity:1}}
+.hero-badge{font-size:.75rem;letter-spacing:.25em;color:var(--gold);margin-bottom:1.2rem;opacity:.85}
+.hero h1{font-family:'Noto Naskh Arabic',serif;font-size:clamp(2.8rem,10vw,5.5rem);font-weight:700;line-height:1.1;color:var(--white);margin-bottom:.5rem;animation:fade-up 1s ease both}
+.hero h1 em{font-style:normal;color:var(--crimson-light);display:block}
+.hero-sub{font-size:clamp(.95rem,3vw,1.2rem);color:var(--text-muted);margin:1.2rem auto 2.5rem;max-width:500px;line-height:1.7;animation:fade-up 1s .2s ease both}
+.hero-cta{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;animation:fade-up 1s .4s ease both}
+.btn-primary{background:var(--crimson);color:var(--white);padding:.9rem 2.2rem;border:none;font-family:'Noto Naskh Arabic',serif;font-size:1rem;cursor:pointer;transition:all .3s;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);text-decoration:none;display:inline-block}
+.btn-primary:hover{background:var(--crimson-light);transform:translateY(-2px);box-shadow:0 8px 24px rgba(139,0,0,.4)}
+.btn-outline{background:transparent;color:var(--gold);padding:.9rem 2.2rem;border:1px solid var(--gold);font-family:'Noto Naskh Arabic',serif;font-size:1rem;cursor:pointer;transition:all .3s;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);text-decoration:none;display:inline-block}
+.btn-outline:hover{background:rgba(201,168,76,.1);transform:translateY(-2px)}
+.scroll-hint{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.4rem;color:var(--text-muted);font-size:.75rem;animation:bob 2s ease-in-out infinite}
+.scroll-hint svg{width:18px;opacity:.5}
+@keyframes bob{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(6px)}}
+
+.features-strip{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:rgba(255,255,255,.05);border-top:1px solid rgba(255,255,255,.05);border-bottom:1px solid rgba(255,255,255,.05);margin:0 0 5rem}
+@media(min-width:600px){.features-strip{grid-template-columns:repeat(4,1fr)}}
+.feature-item{background:var(--black);padding:2rem 1.2rem;text-align:center}
+.feature-icon{font-size:1.8rem;margin-bottom:.6rem}
+.feature-title{font-size:.85rem;font-weight:700;color:var(--white);margin-bottom:.3rem}
+.feature-desc{font-size:.75rem;color:var(--text-muted);line-height:1.5}
+
+.section-header{text-align:center;margin-bottom:3rem}
+.section-badge{display:inline-block;font-size:.7rem;letter-spacing:.3em;color:var(--gold);border:1px solid rgba(201,168,76,.3);padding:.3rem 1rem;margin-bottom:1rem}
+.section-header h2{font-family:'Noto Naskh Arabic',serif;font-size:clamp(1.8rem,6vw,3rem);font-weight:700;color:var(--white)}
+.section-header p{color:var(--text-muted);margin-top:.8rem;font-size:.95rem;max-width:500px;margin-inline:auto;line-height:1.7}
+.divider{width:60px;height:2px;background:linear-gradient(to right,var(--crimson),var(--gold));margin:1rem auto 0}
+
+#products{padding:5rem 1.2rem;position:relative}
+#products::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(to right,transparent,var(--crimson),transparent)}
+.products-grid{display:grid;grid-template-columns:1fr;gap:1.5rem;max-width:900px;margin:0 auto}
+@media(min-width:600px){.products-grid{grid-template-columns:1fr 1fr}}
+@media(min-width:900px){.products-grid{grid-template-columns:1fr 1fr 1fr}}
+
+.product-card{background:var(--gray);border:1px solid rgba(255,255,255,.06);position:relative;overflow:hidden;transition:transform .3s,box-shadow .3s}
+.product-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(139,0,0,.08),transparent 60%);opacity:0;transition:opacity .3s;z-index:1}
+.product-card:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(139,0,0,.25)}
+.product-card:hover::before{opacity:1}
+.product-img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:var(--gray-mid)}
+.product-img-placeholder{width:100%;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;font-size:4rem;background:linear-gradient(135deg,#111,#1f1f1f);position:relative}
+.product-img-placeholder::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(139,0,0,.15),transparent 70%)}
+.product-badge{position:absolute;top:.8rem;left:.8rem;background:var(--crimson);color:var(--white);font-size:.65rem;padding:.2rem .6rem;letter-spacing:.1em;z-index:2}
+.product-info{padding:1.2rem;position:relative;z-index:2}
+.product-name{font-size:1.05rem;font-weight:700;color:var(--white);margin-bottom:.4rem}
+.product-desc{font-size:.82rem;color:var(--text-muted);line-height:1.6;margin-bottom:1rem}
+.product-footer{display:flex;align-items:center;justify-content:space-between;border-top:1px solid rgba(255,255,255,.07);padding-top:.8rem}
+.product-price{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--gold);font-weight:700}
+.product-price small{font-family:'Noto Naskh Arabic',serif;font-size:.7rem;color:var(--text-muted);display:block;font-weight:400}
+.btn-order{background:transparent;border:1px solid var(--crimson);color:var(--crimson-light);padding:.4rem 1rem;font-family:'Noto Naskh Arabic',serif;font-size:.82rem;cursor:pointer;transition:all .2s}
+.btn-order:hover{background:var(--crimson);color:var(--white)}
+.products-loading{text-align:center;padding:3rem;color:var(--text-muted);grid-column:1/-1}
+.spinner{width:36px;height:36px;border:2px solid rgba(139,0,0,.2);border-top-color:var(--crimson);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 1rem}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+#order{padding:5rem 1.2rem;position:relative}
+#order::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(to right,transparent,var(--gold),transparent)}
+.form-container{max-width:560px;margin:0 auto;background:var(--gray);border:1px solid rgba(255,255,255,.07);padding:2.5rem 1.8rem;position:relative;overflow:hidden}
+.form-container::before{content:'';position:absolute;top:-1px;right:0;left:0;height:3px;background:linear-gradient(to right,var(--crimson),var(--gold),var(--crimson))}
+.form-title{font-size:1.3rem;font-weight:700;color:var(--gold);margin-bottom:.4rem}
+.form-subtitle{font-size:.82rem;color:var(--text-muted);margin-bottom:2rem}
+.field{margin-bottom:1.3rem}
+.field label{display:block;font-size:.82rem;color:rgba(255,255,255,.6);margin-bottom:.4rem}
+.field label span{color:var(--crimson-light)}
+.field input,.field select,.field textarea{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-bottom:1px solid rgba(201,168,76,.25);color:var(--white);padding:.85rem 1rem;font-family:'Noto Naskh Arabic',serif;font-size:.95rem;outline:none;transition:.2s;direction:rtl;-webkit-appearance:none}
+.field input::placeholder{color:rgba(255,255,255,.2)}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--crimson);background:rgba(139,0,0,.05)}
+.field select option{background:#1a1a1a}
+.field textarea{resize:vertical;min-height:90px}
+.field-row{display:grid;gap:1rem}
+@media(min-width:480px){.field-row{grid-template-columns:1fr 1fr}}
+.form-submit{width:100%;background:var(--crimson);color:var(--white);padding:1.1rem;border:none;font-family:'Noto Naskh Arabic',serif;font-size:1.05rem;font-weight:700;cursor:pointer;transition:all .3s;margin-top:.5rem}
+.form-submit:hover{background:var(--crimson-light);box-shadow:0 8px 24px rgba(139,0,0,.4)}
+.form-submit:disabled{opacity:.5;cursor:not-allowed}
+.form-notice{text-align:center;font-size:.75rem;color:var(--text-muted);margin-top:1rem;line-height:1.5}
+
+footer{padding:3rem 1.5rem;border-top:1px solid rgba(255,255,255,.06);text-align:center}
+.footer-logo{font-size:1.8rem;color:var(--gold);margin-bottom:1rem}
+.footer-tagline{font-size:.82rem;color:var(--text-muted);margin-bottom:1.5rem}
+.footer-links{display:flex;gap:2rem;justify-content:center;list-style:none;margin-bottom:2rem;flex-wrap:wrap}
+.footer-links a{color:var(--text-muted);text-decoration:none;font-size:.82rem;transition:.2s}
+.footer-links a:hover{color:var(--gold)}
+.footer-copy{font-size:.72rem;color:rgba(255,255,255,.2)}
+
+#toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:var(--gray-mid);border:1px solid var(--gold);color:var(--white);padding:1rem 2rem;font-size:.9rem;z-index:9998;transition:transform .4s cubic-bezier(.34,1.56,.64,1);text-align:center;min-width:260px}
+#toast.show{transform:translateX(-50%) translateY(0)}
+#toast.error{border-color:var(--crimson)}
+
+@keyframes fade-up{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+@media(max-width:480px){.nav-links{display:none}}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="#">🔥 موقع جداحات</a>
+  <ul class="nav-links">
+    <li><a href="#products">المنتجات</a></li>
+    <li><a href="#order">اطلب الآن</a></li>
+  </ul>
+</nav>
+
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-line"></div>
+  <p class="hero-badge">✦ بغداد · الفاخرة · الأصيلة ✦</p>
+  <h1>متجر <em>الجداحات الفاخرة</em></h1>
+  <p class="hero-sub">جداحات أصيلة وعتيقة، مختارة بعناية لعشّاق الرقي والتميّز في بغداد والعراق.</p>
+  <div class="hero-cta">
+    <a href="#products" class="btn-primary">استعرض المنتجات</a>
+    <a href="#order" class="btn-outline">اطلب الآن</a>
+  </div>
+  <div class="scroll-hint">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+  </div>
+</section>
+
+<div class="features-strip">
+  <div class="feature-item"><div class="feature-icon">🏆</div><div class="feature-title">جودة فائقة</div><div class="feature-desc">كل قطعة مضمونة ومختارة بعناية</div></div>
+  <div class="feature-item"><div class="feature-icon">📦</div><div class="feature-title">توصيل ببغداد</div><div class="feature-desc">نوصّل لجميع مناطق بغداد</div></div>
+  <div class="feature-item"><div class="feature-icon">💎</div><div class="feature-title">قطع نادرة</div><div class="feature-desc">جداحات عتيقة وفاخرة حصرية</div></div>
+  <div class="feature-item"><div class="feature-icon">📞</div><div class="feature-title">خدمة شخصية</div><div class="feature-desc">تواصل مباشر مع البائع</div></div>
+</div>
+
+<section id="products">
+  <div class="section-header reveal">
+    <div class="section-badge">✦ مجموعتنا ✦</div>
+    <h2>الجداحات الفاخرة</h2>
+    <p>مجموعة مختارة من أرقى الجداحات الكلاسيكية والعتيقة</p>
+    <div class="divider"></div>
+  </div>
+  <div class="products-grid" id="products-grid">
+    <div class="products-loading"><div class="spinner"></div><p>جاري تحميل المنتجات...</p></div>
+  </div>
+</section>
+
+<section id="order">
+  <div class="section-header reveal">
+    <div class="section-badge">✦ الطلب ✦</div>
+    <h2>اطلب قطعتك</h2>
+    <p>أرسل طلبك وسنتواصل معك في أقرب وقت</p>
+    <div class="divider"></div>
+  </div>
+  <div class="form-container reveal">
+    <div class="form-title">📋 نموذج الطلب</div>
+    <div class="form-subtitle">جميع الحقول مطلوبة — التوصيل داخل بغداد فقط</div>
+    <div class="field">
+      <label>المنتج المطلوب <span>*</span></label>
+      <select id="product-select"><option value="">— جاري التحميل... —</option></select>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>الاسم الكامل <span>*</span></label><input type="text" id="name" placeholder="محمد علي"></div>
+      <div class="field"><label>رقم الهاتف <span>*</span></label><input type="tel" id="phone" placeholder="07xxxxxxxxx"></div>
+    </div>
+    <div class="field">
+      <label>المنطقة في بغداد <span>*</span></label>
+      <select id="district">
+        <option value="">— اختر المنطقة —</option>
+        <option>الكرخ</option><option>الرصافة</option><option>الكاظمية</option><option>الأعظمية</option>
+        <option>الكرادة</option><option>المنصور</option><option>الزعفرانية</option><option>دورة</option>
+        <option>المدائن</option><option>الغزالية</option><option>الشعلة</option><option>الحارثية</option>
+        <option>الوزيرية</option><option>البياع</option><option>سيدية</option><option>الجادرية</option>
+        <option>أبو غريب</option><option>المحمودية</option><option>منطقة أخرى</option>
+      </select>
+    </div>
+    <div class="field"><label>العنوان التفصيلي <span>*</span></label><textarea id="address" placeholder="مثال: حي الجامعة، شارع 14 رمضان، قرب مسجد الرحمة"></textarea></div>
+    <div class="field"><label>ملاحظات (اختياري)</label><textarea id="notes" placeholder="أي تفاصيل إضافية؟" style="min-height:60px"></textarea></div>
+    <button class="form-submit" id="submit-btn" onclick="submitOrder()">🔥 أرسل الطلب الآن</button>
+    <p class="form-notice">🔒 بياناتك محمية ولن تُشارك مع أي جهة أخرى<br>سيتم التواصل معك خلال ساعات</p>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">🔥 موقع جداحات</div>
+  <p class="footer-tagline">الجداحات الفاخرة — بغداد، العراق</p>
+  <ul class="footer-links">
+    <li><a href="#products">المنتجات</a></li>
+    <li><a href="#order">اطلب الآن</a></li>
+  </ul>
+  <p class="footer-copy">© 2025 متجر الجداحات الفاخرة — جميع الحقوق محفوظة</p>
+</footer>
+
+<div id="toast"></div>
+
+<script>
+const SUPABASE_URL = 'https://jwbxorakaxckrqhuzvto.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp3YnhvcmFrYXhja3JxaHV6dnRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5NzMzNzIsImV4cCI6MjA5MTU0OTM3Mn0.EtDQJx33MGrB--8IpwjKD5hCU85lmbuKuozevGiv8yA';
+const WEBHOOK_URL  = 'https://hook.us2.make.com/jdyoz3lej8fp3ntimehixtfaunsnqdir';
+const H = {'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'};
+
+async function getProducts(){
+  const r=await fetch(`${SUPABASE_URL}/rest/v1/products?select=*&order=created_at.desc`,{headers:H});
+  return r.ok?r.json():[];
+}
+
+function renderProducts(products){
+  const grid=document.getElementById('products-grid');
+  const sel=document.getElementById('product-select');
+  if(!products.length){
+    grid.innerHTML='<p style="color:var(--text-muted);text-align:center;grid-column:1/-1;padding:3rem">لا توجد منتجات حالياً</p>';
+    sel.innerHTML='<option value="">— لا توجد منتجات —</option>';
+    return;
+  }
+  grid.innerHTML=products.map(p=>`
+    <div class="product-card reveal">
+      ${p.badge?`<div class="product-badge">${p.badge}</div>`:''}
+      ${p.image_url?`<img class="product-img" src="${p.image_url}" alt="${p.name}" loading="lazy">`:`<div class="product-img-placeholder">🔥</div>`}
+      <div class="product-info">
+        <div class="product-name">${p.name}</div>
+        <div class="product-desc">${p.description||''}</div>
+        <div class="product-footer">
+          <div class="product-price">${Number(p.price).toLocaleString('ar-IQ')}<small>دينار عراقي</small></div>
+          <button class="btn-order" onclick="selectProduct('${p.name.replace(/'/g,"\\'")}')">اطلب الآن</button>
+        </div>
+      </div>
+    </div>`).join('');
+  sel.innerHTML='<option value="">— اختر المنتج —</option>'+
+    products.map(p=>`<option value="${p.name}">${p.name} — ${Number(p.price).toLocaleString('ar-IQ')} د.ع</option>`).join('');
+  document.querySelectorAll('.reveal:not(.visible)').forEach(el=>obs.observe(el));
+}
+
+async function loadProducts(){
+  try{renderProducts(await getProducts());}
+  catch{document.getElementById('products-grid').innerHTML='<p style="color:var(--text-muted);text-align:center;grid-column:1/-1;padding:3rem">⚠️ تعذر تحميل المنتجات</p>';}
+}
+
+function selectProduct(name){
+  document.getElementById('product-select').value=name;
+  document.getElementById('order').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+async function submitOrder(){
+  const product=document.getElementById('product-select').value.trim();
+  const name=document.getElementById('name').value.trim();
+  const phone=document.getElementById('phone').value.trim();
+  const district=document.getElementById('district').value.trim();
+  const address=document.getElementById('address').value.trim();
+  const notes=document.getElementById('notes').value.trim();
+  if(!product||!name||!phone||!district||!address){showToast('⚠️ يرجى تعبئة جميع الحقول المطلوبة','error');return;}
+  const btn=document.getElementById('submit-btn');
+  btn.disabled=true;btn.textContent='⏳ جاري الإرسال...';
+  try{
+    const r=await fetch(WEBHOOK_URL,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({product,name,phone,district,address,notes,
+        timestamp:new Date().toLocaleString('ar-IQ',{timeZone:'Asia/Baghdad'}),source:'موقع جداحات'})});
+    if(r.ok){
+      showToast('✅ تم إرسال طلبك! سنتواصل معك قريباً.');
+      ['product-select','name','phone','district','address','notes'].forEach(id=>document.getElementById(id).value='');
+    }else throw new Error();
+  }catch{showToast('❌ حدث خطأ، يرجى المحاولة مجدداً.','error');}
+  finally{btn.disabled=false;btn.textContent='🔥 أرسل الطلب الآن';}
+}
+
+function showToast(msg,type='success'){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className=type==='error'?'error show':'show';
+  setTimeout(()=>t.classList.remove('show'),4000);
+}
+
+const obs=new IntersectionObserver((entries)=>{
+  entries.forEach((e,i)=>{if(e.isIntersecting){setTimeout(()=>e.target.classList.add('visible'),i*80);obs.unobserve(e.target);}});
+},{threshold:0.1});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+window.addEventListener('scroll',()=>{
+  const nav=document.querySelector('nav');
+  nav.style.background=window.scrollY>60?'rgba(0,0,0,0.95)':'';
+  nav.style.backdropFilter=window.scrollY>60?'blur(12px)':'';
+});
+
+loadProducts();
+</script>
+</body>
+</html>
