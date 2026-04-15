@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>سوق أهلنا — دليل المحلات العراقية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root {
+  --navy: #1A237E; --navy-dark: #0D1757; --navy-light: #283593;
+  --orange: #FF9800; --orange-dark: #F57C00; --orange-light: #FFB74D;
+  --white: #ffffff; --bg: #F5F6FA; --bg2: #EDEEF5;
+  --text: #1a1a2e; --text2: #555670; --text3: #9899B0;
+  --border: #E2E3EF; --card: #ffffff;
+  --radius: 14px; --radius-sm: 8px;
+  --shadow: 0 2px 12px rgba(26,35,126,0.08);
+  --shadow-md: 0 4px 24px rgba(26,35,126,0.12);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Cairo', 'Tajawal', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 15px; }
+a { text-decoration: none; color: inherit; }
+
+/* NAVBAR */
+.navbar { background: var(--navy); position: sticky; top: 0; z-index: 100; padding: 0 24px; height: 64px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 16px rgba(0,0,0,0.2); }
+.logo { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.logo-mark { width: 36px; height: 36px; background: var(--orange); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; color: #fff; flex-shrink: 0; }
+.logo-text { font-size: 20px; font-weight: 700; color: #fff; }
+.logo-text span { color: var(--orange); }
+.nav-right { display: flex; align-items: center; gap: 12px; }
+.nav-link { color: rgba(255,255,255,0.75); font-size: 14px; cursor: pointer; padding: 6px 10px; border-radius: var(--radius-sm); transition: all 0.2s; }
+.nav-link:hover { color: #fff; background: rgba(255,255,255,0.1); }
+.btn-primary { background: var(--orange); color: #fff; border: none; border-radius: var(--radius-sm); padding: 8px 18px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Cairo', sans-serif; transition: all 0.2s; white-space: nowrap; }
+.btn-primary:hover { background: var(--orange-dark); transform: translateY(-1px); }
+.nav-user-btn { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: #fff; border-radius: 20px; padding: 6px 14px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Cairo', sans-serif; display: flex; align-items: center; gap: 6px; }
+
+/* HERO */
+.hero { background: var(--navy); padding: 48px 24px 56px; text-align: center; position: relative; overflow: hidden; }
+.hero::before { content: ''; position: absolute; top: -60px; left: -60px; width: 300px; height: 300px; background: rgba(255,152,0,0.06); border-radius: 50%; }
+.hero::after { content: ''; position: absolute; bottom: -80px; right: -40px; width: 250px; height: 250px; background: rgba(255,255,255,0.03); border-radius: 50%; }
+.hero-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,152,0,0.15); border: 1px solid rgba(255,152,0,0.3); color: var(--orange-light); font-size: 12px; padding: 4px 12px; border-radius: 20px; margin-bottom: 16px; }
+.hero-title { color: #fff; font-size: clamp(22px, 5vw, 34px); font-weight: 700; line-height: 1.35; margin-bottom: 10px; }
+.hero-title .accent { color: var(--orange); }
+.hero-sub { color: rgba(255,255,255,0.6); font-size: 14px; margin-bottom: 30px; max-width: 480px; margin-left: auto; margin-right: auto; line-height: 1.7; }
+.search-wrap { max-width: 640px; margin: 0 auto; background: #fff; border-radius: var(--radius); padding: 10px; display: grid; grid-template-columns: 160px 1fr auto; gap: 8px; box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
+.search-select, .search-input-field { border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 10px 14px; font-size: 14px; font-family: 'Cairo', sans-serif; color: var(--text); background: var(--bg); outline: none; width: 100%; transition: border-color 0.2s; }
+.search-select:focus, .search-input-field:focus { border-color: var(--navy); }
+.search-select { appearance: none; cursor: pointer; }
+.search-btn { background: var(--orange); color: #fff; border: none; border-radius: var(--radius-sm); padding: 10px 24px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'Cairo', sans-serif; transition: all 0.2s; white-space: nowrap; display: flex; align-items: center; gap: 6px; }
+.search-btn:hover { background: var(--orange-dark); }
+
+/* STATS BAR */
+.stats-bar { background: var(--navy-dark); padding: 14px 24px; display: flex; justify-content: center; gap: 48px; flex-wrap: wrap; }
+.stat-item { text-align: center; color: rgba(255,255,255,0.8); font-size: 13px; }
+.stat-num { display: block; font-size: 20px; font-weight: 700; color: var(--orange); line-height: 1.2; }
+
+/* BODY */
+.body-wrap { max-width: 1100px; margin: 0 auto; padding: 28px 16px 80px; }
+
+/* CATEGORIES */
+.cats-scroll { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 28px; -ms-overflow-style: none; scrollbar-width: none; }
+.cats-scroll::-webkit-scrollbar { display: none; }
+.cat-item { display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; flex-shrink: 0; min-width: 72px; transition: transform 0.2s; }
+.cat-item:hover { transform: translateY(-2px); }
+.cat-circle { width: 54px; height: 54px; border-radius: 50%; background: var(--card); border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 24px; transition: all 0.2s; }
+.cat-item.active .cat-circle, .cat-item:hover .cat-circle { background: var(--navy); border-color: var(--navy); }
+.cat-name { font-size: 12px; color: var(--text2); font-weight: 500; white-space: nowrap; }
+.cat-item.active .cat-name { color: var(--navy); font-weight: 600; }
+
+/* SECTION HEADER */
+.sec-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.sec-title { font-size: 17px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 8px; }
+.sec-title::before { content: ''; display: block; width: 4px; height: 18px; background: var(--orange); border-radius: 3px; }
+.sec-link { font-size: 13px; color: var(--navy); font-weight: 500; cursor: pointer; transition: opacity 0.2s; }
+.sec-link:hover { opacity: 0.7; }
+
+/* SHOPS GRID */
+.shops-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; margin-bottom: 36px; }
+.shop-card { background: var(--card); border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); cursor: pointer; transition: all 0.25s; position: relative; }
+.shop-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: rgba(26,35,126,0.2); }
+.shop-thumb { height: 110px; display: flex; align-items: center; justify-content: center; font-size: 42px; position: relative; }
+.shop-badge-wrap { position: absolute; top: 10px; left: 10px; display: flex; gap: 4px; }
+.badge { font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 20px; white-space: nowrap; }
+.badge-featured { background: var(--navy); color: #fff; }
+.badge-new { background: #E8F5E9; color: #2E7D32; }
+.badge-open { background: #E8F5E9; color: #1B5E20; }
+.badge-closed { background: #FFEBEE; color: #B71C1C; }
+.fav-btn { position: absolute; top: 10px; right: 10px; width: 30px; height: 30px; border-radius: 50%; background: rgba(255,255,255,0.9); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; transition: all 0.2s; }
+.fav-btn:hover { transform: scale(1.15); }
+.fav-btn.active { color: #e53935; }
+.shop-body { padding: 12px 14px; }
+.shop-name { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+.shop-meta { font-size: 12px; color: var(--text3); margin-bottom: 8px; display: flex; align-items: center; gap: 4px; }
+.shop-footer { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 8px; margin-top: 8px; }
+.stars { color: var(--orange); font-size: 12px; display: flex; align-items: center; gap: 3px; }
+.rating-count { color: var(--text3); font-size: 11px; }
+.contact-btns { display: flex; gap: 6px; }
+.btn-call, .btn-wa { width: 28px; height: 28px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 13px; transition: all 0.2s; }
+.btn-call { background: #E3F2FD; }
+.btn-call:hover { background: #1565C0; color: #fff; }
+.btn-wa { background: #E8F5E9; }
+.btn-wa:hover { background: #1B5E20; color: #fff; }
+
+/* NEARBY */
+.nearby-scroll { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 36px; -ms-overflow-style: none; scrollbar-width: none; }
+.nearby-scroll::-webkit-scrollbar { display: none; }
+.nearby-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; display: flex; gap: 12px; align-items: center; min-width: 220px; cursor: pointer; transition: all 0.2s; flex-shrink: 0; }
+.nearby-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); border-color: rgba(26,35,126,0.2); }
+.nearby-icon { width: 50px; height: 50px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0; }
+.nearby-name { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.nearby-dist { font-size: 12px; color: var(--text3); display: flex; align-items: center; gap: 3px; }
+.dist-pill { background: #E8F5E9; color: #2E7D32; font-size: 10px; padding: 2px 6px; border-radius: 10px; font-weight: 600; }
+
+/* OFFERS */
+.offers-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; margin-bottom: 36px; }
+.offer-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; display: flex; gap: 14px; align-items: center; cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden; }
+.offer-card::before { content: ''; position: absolute; top: 0; right: 0; width: 4px; height: 100%; background: var(--orange); }
+.offer-card:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
+.offer-icon { width: 56px; height: 56px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 28px; flex-shrink: 0; }
+.offer-info { min-width: 0; flex: 1; }
+.offer-shop { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+.offer-desc { font-size: 12px; color: var(--text2); margin-bottom: 6px; line-height: 1.4; }
+.offer-tag { display: inline-block; background: var(--orange); color: #fff; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+
+/* CTA BANNER */
+.cta-banner { background: var(--navy); border-radius: var(--radius); padding: 32px 28px; text-align: center; margin-bottom: 32px; position: relative; overflow: hidden; }
+.cta-banner::before { content: ''; position: absolute; top: -40px; right: -40px; width: 200px; height: 200px; background: rgba(255,152,0,0.1); border-radius: 50%; }
+.cta-title { color: #fff; font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+.cta-sub { color: rgba(255,255,255,0.65); font-size: 13px; margin-bottom: 20px; max-width: 420px; margin-left: auto; margin-right: auto; line-height: 1.6; }
+.cta-btn { background: var(--orange); color: #fff; border: none; border-radius: var(--radius-sm); padding: 12px 32px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: 'Cairo', sans-serif; transition: all 0.2s; }
+.cta-btn:hover { background: var(--orange-dark); transform: translateY(-2px); }
+
+/* LOADING */
+.loading-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+.skeleton { background: var(--card); border-radius: var(--radius); border: 1px solid var(--border); overflow: hidden; }
+.skeleton-thumb { height: 110px; background: linear-gradient(90deg, var(--bg) 25%, var(--bg2) 50%, var(--bg) 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; }
+.skeleton-body { padding: 12px 14px; }
+.skeleton-line { height: 12px; background: linear-gradient(90deg, var(--bg) 25%, var(--bg2) 50%, var(--bg) 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; border-radius: 6px; margin-bottom: 8px; }
+.skeleton-line.short { width: 60%; }
+@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+/* BOTTOM NAV */
+.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-top: 1px solid var(--border); display: none; justify-content: space-around; padding: 8px 0 12px; z-index: 90; box-shadow: 0 -4px 20px rgba(0,0,0,0.08); }
+.bnav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; padding: 4px 12px; border-radius: var(--radius-sm); transition: all 0.2s; flex: 1; }
+.bnav-icon { font-size: 20px; line-height: 1; }
+.bnav-label { font-size: 10px; color: var(--text3); font-weight: 500; }
+.bnav-item.active .bnav-label { color: var(--navy); font-weight: 700; }
+
+/* MODAL */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; align-items: center; justify-content: center; padding: 16px; }
+.modal-overlay.open { display: flex; }
+.modal { background: #fff; border-radius: var(--radius); width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto; animation: slideUp 0.25s ease; }
+@keyframes slideUp { from{transform:translateY(30px);opacity:0} to{transform:translateY(0);opacity:1} }
+.modal-thumb { height: 160px; display: flex; align-items: center; justify-content: center; font-size: 64px; border-radius: var(--radius) var(--radius) 0 0; position: relative; }
+.modal-close { position: absolute; top: 12px; left: 12px; width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.9); border: none; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; }
+.modal-body { padding: 20px; }
+.modal-name { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+.modal-cat { font-size: 13px; color: var(--text3); margin-bottom: 12px; }
+.modal-info-row { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text2); margin-bottom: 8px; }
+.modal-divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+.modal-desc { font-size: 13px; color: var(--text2); line-height: 1.7; margin-bottom: 16px; }
+.products-mini { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 20px; }
+.product-mini { background: var(--bg); border-radius: var(--radius-sm); padding: 10px 8px; text-align: center; }
+.product-mini-icon { font-size: 22px; margin-bottom: 4px; }
+.product-mini-name { font-size: 11px; color: var(--text); font-weight: 500; }
+.product-mini-price { font-size: 11px; color: var(--orange); font-weight: 700; }
+.modal-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.btn-action { padding: 12px; border-radius: var(--radius-sm); border: none; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'Cairo', sans-serif; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s; }
+.btn-action-call { background: var(--navy); color: #fff; }
+.btn-action-call:hover { background: var(--navy-dark); }
+.btn-action-wa { background: #25D366; color: #fff; }
+.btn-action-wa:hover { background: #1DA851; }
+
+/* VIEW SHOP BTN */
+.btn-view-shop { width: 100%; margin-top: 10px; padding: 11px; border-radius: var(--radius-sm); border: 1.5px solid var(--navy); background: transparent; color: var(--navy); font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'Cairo', sans-serif; transition: all 0.2s; }
+.btn-view-shop:hover { background: var(--navy); color: #fff; }
+
+/* RESULTS */
+.results-info { font-size: 13px; color: var(--text3); margin-bottom: 16px; display: none; }
+.no-results { text-align: center; padding: 48px 24px; color: var(--text3); }
+.no-results-icon { font-size: 48px; margin-bottom: 12px; }
+
+/* TOAST */
+.toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--navy); color: #fff; font-size: 13px; padding: 10px 20px; border-radius: 20px; opacity: 0; transition: all 0.3s; z-index: 300; white-space: nowrap; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast.success { background: #2E7D32; }
+.toast.error { background: #B71C1C; }
+
+/* AUTH MODAL */
+.auth-modal { background: #fff; border-radius: var(--radius); width: 100%; max-width: 420px; padding: 28px; animation: slideUp 0.25s ease; }
+.auth-logo { width: 56px; height: 56px; background: var(--orange); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 24px; margin: 0 auto 16px; }
+.auth-title { text-align: center; font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+.auth-sub { text-align: center; font-size: 13px; color: var(--text3); margin-bottom: 20px; }
+.auth-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 0; background: var(--bg); border-radius: var(--radius-sm); padding: 4px; margin-bottom: 20px; }
+.auth-tab { text-align: center; padding: 8px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--text3); transition: all 0.2s; }
+.auth-tab.active { background: #fff; color: var(--navy); box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+.form-group { margin-bottom: 12px; }
+.form-label { font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 5px; display: block; }
+.form-input { width: 100%; border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; font-size: 13px; font-family: 'Cairo', sans-serif; color: var(--text); background: var(--bg); outline: none; transition: border-color 0.2s; }
+.form-input:focus { border-color: var(--navy); background: #fff; }
+.auth-submit { width: 100%; background: var(--navy); color: #fff; border: none; border-radius: var(--radius-sm); padding: 12px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: 'Cairo', sans-serif; margin-top: 4px; transition: background 0.2s; }
+.auth-submit:hover { background: var(--navy-dark); }
+.auth-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
+@media (max-width: 640px) {
+  .navbar { padding: 0 16px; }
+  .hero { padding: 32px 16px 44px; }
+  .search-wrap { grid-template-columns: 1fr 1fr; }
+  .search-btn { grid-column: span 2; justify-content: center; }
+  .stats-bar { gap: 24px; }
+  .body-wrap { padding: 20px 12px 90px; }
+  .shops-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .bottom-nav { display: flex; }
+  .nav-link { display: none; }
+  .modal-overlay { padding: 0; align-items: flex-end; }
+  .modal { border-radius: var(--radius) var(--radius) 0 0; max-height: 85vh; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="logo" onclick="window.location.href='index.html'">
+    <div class="logo-mark">س</div>
+    <div class="logo-text">سوق <span>أهلنا</span></div>
+  </div>
+  <div class="nav-right">
+    <span class="nav-link" id="navLoginBtn" onclick="openAuthModal()">تسجيل دخول</span>
+    <button class="btn-primary" id="navRegisterBtn" onclick="window.location.href='register.html'">سجّل محلك</button>
+    <button class="nav-user-btn" id="navUserBtn" style="display:none" onclick="window.location.href='dashboard.html'">
+      <span id="navUserName">حسابي</span> ⚙️
+    </button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">🇮🇶 دليلك في كل محافظات العراق</div>
+  <h1 class="hero-title">اكتشف <span class="accent">أفضل المحلات</span><br>في منطقتك</h1>
+  <p class="hero-sub">دليل تجاري ذكي يربطك بالمحلات المحلية — ابحث، قيّم، وتواصل مباشرة</p>
+  <div class="search-wrap">
+    <select class="search-select" id="govSelect" onchange="filterShops()">
+      <option value="">كل المحافظات</option>
+      <option>بغداد</option><option>البصرة</option><option>أربيل</option>
+      <option>الموصل</option><option>النجف</option><option>كربلاء</option>
+      <option>كركوك</option><option>السليمانية</option><option>ذي قار</option>
+      <option>ميسان</option><option>بابل</option><option>ديالى</option>
+      <option>الأنبار</option><option>واسط</option><option>دهوك</option>
+    </select>
+    <input class="search-input-field" type="text" id="searchInput" placeholder="ابحث عن محل أو منتج..." oninput="filterShops()">
+    <button class="search-btn" onclick="filterShops()">🔍 بحث</button>
+  </div>
+</div>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stat-item"><span class="stat-num" id="statShops">—</span>محل مسجّل</div>
+  <div class="stat-item"><span class="stat-num">18</span>محافظة</div>
+  <div class="stat-item"><span class="stat-num" id="statProducts">—</span>منتج معروض</div>
+  <div class="stat-item"><span class="stat-num">97%</span>رضا الزبائن</div>
+</div>
+
+<!-- BODY -->
+<div class="body-wrap">
+  <div class="cats-scroll" id="catsScroll"></div>
+  <div class="results-info" id="resultsInfo"></div>
+
+  <!-- FEATURED SHOPS -->
+  <div id="featuredSection">
+    <div class="sec-head">
+      <div class="sec-title">محلات مميزة</div>
+      <span class="sec-link">عرض الكل ←</span>
+    </div>
+    <div id="shopsContainer"></div>
+  </div>
+
+  <!-- NEARBY (static) -->
+  <div id="nearbySection">
+    <div class="sec-head">
+      <div class="sec-title">📍 الأقرب إليك</div>
+      <span class="sec-link" onclick="showToast('فتح الخريطة — قريباً')">على الخريطة ←</span>
+    </div>
+    <div class="nearby-scroll" id="nearbyScroll"></div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-banner">
+    <div class="cta-title">هل تمتلك محلاً تجارياً؟</div>
+    <div class="cta-sub">سجّل محلك في سوق أهلنا وابدأ بالوصول إلى آلاف الزبائن — الاشتراك الشهري بدءاً من 5,000 د.ع</div>
+    <button class="cta-btn" onclick="window.location.href='register.html'">ابدأ الآن — مجاناً لأول شهر ←</button>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <div class="bnav-item active"><div class="bnav-icon">🏠</div><span class="bnav-label">الرئيسية</span></div>
+  <div class="bnav-item" onclick="document.getElementById('searchInput').focus()"><div class="bnav-icon">🔍</div><span class="bnav-label">بحث</span></div>
+  <div class="bnav-item" onclick="window.location.href='register.html'"><div class="bnav-icon">🏪</div><span class="bnav-label">محلك</span></div>
+  <div class="bnav-item" onclick="window.location.href='dashboard.html'"><div class="bnav-icon">📊</div><span class="bnav-label">لوحتي</span></div>
+  <div class="bnav-item" onclick="openAuthModal()"><div class="bnav-icon">👤</div><span class="bnav-label">حسابي</span></div>
+</div>
+
+<!-- SHOP MODAL -->
+<div class="modal-overlay" id="shopModal">
+  <div class="modal" id="modalContent"></div>
+</div>
+
+<!-- AUTH MODAL -->
+<div class="modal-overlay" id="authModal">
+  <div class="auth-modal">
+    <div class="auth-logo">س</div>
+    <div class="auth-title">سوق أهلنا</div>
+    <div class="auth-sub">سجّل دخولك لإدارة محلك</div>
+    <div class="auth-tabs">
+      <div class="auth-tab active" onclick="authTab('login')">دخول</div>
+      <div class="auth-tab" onclick="authTab('signup')">حساب جديد</div>
+    </div>
+    <div id="loginForm">
+      <div class="form-group"><label class="form-label">البريد الإلكتروني</label><input class="form-input" id="loginEmail" type="email" placeholder="email@example.com"></div>
+      <div class="form-group"><label class="form-label">كلمة المرور</label><input class="form-input" id="loginPass" type="password" placeholder="••••••••"></div>
+      <button class="auth-submit" id="loginBtn" onclick="doLogin()">دخول</button>
+    </div>
+    <div id="signupForm" style="display:none">
+      <div class="form-group"><label class="form-label">الاسم الكامل</label><input class="form-input" id="signupName" type="text" placeholder="اسمك"></div>
+      <div class="form-group"><label class="form-label">البريد الإلكتروني</label><input class="form-input" id="signupEmail" type="email" placeholder="email@example.com"></div>
+      <div class="form-group"><label class="form-label">كلمة المرور</label><input class="form-input" id="signupPass" type="password" placeholder="٨ أحرف على الأقل"></div>
+      <button class="auth-submit" id="signupBtn" onclick="doSignup()">إنشاء حساب</button>
+    </div>
+    <button onclick="closeAuthModal()" style="width:100%;margin-top:10px;padding:8px;border:1px solid var(--border);border-radius:var(--radius-sm);background:none;font-family:'Cairo',sans-serif;cursor:pointer;font-size:13px;color:var(--text3);">إغلاق</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SUPABASE_URL = 'https://zmspznedsdgbzwzyvnoa.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inptc3B6bmVkc2RnYnp3enl2bm9hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5MDYzNzAsImV4cCI6MjA5MTQ4MjM3MH0.rC48GyFMbhZzoJu-_RSrGC57VbRqkY4YNMcacUUmE0k';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+function getParam(key) { return new URLSearchParams(window.location.search).get(key); }
+async function requireLogin(redirectBack = true) {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { window.location.href = 'index.html?login=1'; return null; }
+  return session.user;
+}
+async function getUserStore(userId) {
+  const { data } = await sb.from('stores').select('*').eq('user_id', userId).single();
+  return data;
+}
+</script>
+<script>
+const CATS = [
+  {id:'all',label:'الكل',icon:'🏪'},{id:'ملابس رجالية',label:'ملابس رجالية',icon:'👔'},
+  {id:'ملابس نسائية',label:'ملابس نسائية',icon:'👗'},{id:'إلكترونيات',label:'إلكترونيات',icon:'📱'},
+  {id:'أجهزة كهربائية',label:'كهربائيات',icon:'🔌'},{id:'مواد منزلية',label:'منزلية',icon:'🛋️'},
+  {id:'مطاعم',label:'مطاعم',icon:'🍽️'},{id:'صيدليات',label:'صيدليات',icon:'💊'},
+  {id:'مخابز',label:'مخابز',icon:'🥖'},{id:'مجوهرات',label:'مجوهرات',icon:'💍'},
+  {id:'أثاث',label:'أثاث',icon:'🪑'},{id:'سيارات',label:'سيارات',icon:'🚗'},
+];
+const BG_COLORS = ['#E3F2FD','#FFF8E1','#F3E5F5','#E8F5E9','#FFF3E0','#FFEBEE','#E8EAF6','#FFFDE7'];
+const CAT_EMOJIS = {'ملابس رجالية':'👔','ملابس نسائية':'👗','إلكترونيات':'📱','أجهزة كهربائية':'🔌','مواد منزلية':'🛋️','مطاعم':'🍽️','صيدليات':'💊','مخابز':'🥖','مجوهرات':'💍','أثاث':'🪑','سيارات':'🚗'};
+
+let activeCategory = 'all';
+let favorites = new Set(JSON.parse(localStorage.getItem('favs')||'[]'));
+let allShops = [];
+
+const NEARBY_STATIC = [
+  {name:'بقالة الفرات',dist:'150 م',cat:'بقالة',emoji:'🛒',bg:'#E8F5E9'},
+  {name:'مطعم النهرين',dist:'320 م',cat:'مطاعم',emoji:'🍽️',bg:'#FFF8E1'},
+  {name:'صيدلية النور',dist:'450 م',cat:'صيدلية',emoji:'💊',bg:'#F3E5F5'},
+  {name:'ورشة الميكانيك',dist:'600 م',cat:'خدمات',emoji:'🔧',bg:'#E3F2FD'},
+  {name:'مكتبة العلم',dist:'780 م',cat:'كتب',emoji:'📚',bg:'#FFEBEE'},
+];
+
+window.addEventListener('DOMContentLoaded', async () => {
+  renderCats();
+  renderNearby();
+  await checkAuth();
+  await loadStats();
+  await loadShops();
+});
+
+async function checkAuth() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) {
+    document.getElementById('navLoginBtn').style.display = 'none';
+    document.getElementById('navRegisterBtn').style.display = 'none';
+    document.getElementById('navUserBtn').style.display = 'flex';
+    const name = session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'حسابي';
+    document.getElementById('navUserName').textContent = name;
+  }
+}
+
+async function loadStats() {
+  const [{count: sc}, {count: pc}] = await Promise.all([
+    sb.from('stores').select('*',{count:'exact',head:true}).eq('active',true),
+    sb.from('products').select('*',{count:'exact',head:true}).eq('active',true),
+  ]);
+  document.getElementById('statShops').textContent = (sc||0).toLocaleString('ar');
+  document.getElementById('statProducts').textContent = (pc||0).toLocaleString('ar');
+}
+
+async function loadShops(cat='all', gov='', q='') {
+  showSkeleton();
+  let query = sb.from('stores').select('*, products(count)').eq('active', true).order('created_at',{ascending:false}).limit(20);
+  if (cat !== 'all') query = query.eq('category', cat);
+  if (gov) query = query.eq('governorate', gov);
+  if (q) query = query.ilike('name', '%'+q+'%');
+  const {data, error} = await query;
+  allShops = data || [];
+  renderShops(allShops);
+}
+
+function showSkeleton() {
+  document.getElementById('shopsContainer').innerHTML = `
+    <div class="loading-grid">
+      ${Array(6).fill(`<div class="skeleton"><div class="skeleton-thumb"></div><div class="skeleton-body"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div></div>`).join('')}
+    </div>`;
+}
+
+function renderCats() {
+  document.getElementById('catsScroll').innerHTML = CATS.map(c => `
+    <div class="cat-item ${c.id===activeCategory?'active':''}" onclick="setCategory('${c.id}')">
+      <div class="cat-circle">${c.icon}</div>
+      <span class="cat-name">${c.label}</span>
+    </div>`).join('');
+}
+
+function setCategory(id) {
+  activeCategory = id;
+  renderCats();
+  filterShops();
+}
+
+function renderShops(shops) {
+  const infoEl = document.getElementById('resultsInfo');
+  const q = document.getElementById('searchInput').value.trim();
+  const gov = document.getElementById('govSelect').value;
+  const isFiltering = q || gov || activeCategory !== 'all';
+  if (isFiltering) {
+    infoEl.style.display='block';
+    infoEl.textContent = `تم العثور على ${shops.length} محل`;
+  } else {
+    infoEl.style.display='none';
+  }
+  document.getElementById('nearbySection').style.display = isFiltering ? 'none' : 'block';
+  if (!shops.length) {
+    document.getElementById('shopsContainer').innerHTML = `<div class="no-results"><div class="no-results-icon">🔍</div><div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:6px;">لا توجد نتائج</div><div>جرّب كلمة بحث مختلفة</div></div>`;
+    return;
+  }
+  document.getElementById('shopsContainer').innerHTML = `
+    <div class="shops-grid">
+      ${shops.map((s,i) => `
+        <div class="shop-card" onclick="openShop('${s.id}')">
+          <div class="shop-thumb" style="background:${BG_COLORS[i%BG_COLORS.length]}">
+            ${CAT_EMOJIS[s.category]||'🏪'}
+            <div class="shop-badge-wrap">
+              ${s.plan==='premium'||s.plan==='pro' ? '<span class="badge badge-featured">مميز ⭐</span>' : ''}
+            </div>
+            <button class="fav-btn ${favorites.has(s.id)?'active':''}" onclick="toggleFav(event,'${s.id}')">
+              ${favorites.has(s.id)?'❤️':'🤍'}
+            </button>
+          </div>
+          <div class="shop-body">
+            <div class="shop-name">${s.name}</div>
+            <div class="shop-meta">📍 ${s.area||''}, ${s.governorate||''}
+              <span class="badge badge-open" style="margin-right:auto">مفتوح</span>
+            </div>
+            <div class="shop-footer">
+              <div class="stars">★★★★★ <span style="color:var(--text)">4.8</span> <span class="rating-count">(${Math.floor(Math.random()*100+20)})</span></div>
+              <div class="contact-btns">
+                <button class="btn-call" onclick="event.stopPropagation();showToast('اتصال بـ ${s.name} 📞')">📞</button>
+                <button class="btn-wa" onclick="event.stopPropagation();window.open('https://wa.me/964${(s.whatsapp||s.phone||'').replace(/^0/,'')}','_blank')">💬</button>
+              </div>
+            </div>
+          </div>
+        </div>`).join('')}
+    </div>`;
+}
+
+function renderNearby() {
+  document.getElementById('nearbyScroll').innerHTML = NEARBY_STATIC.map(n => `
+    <div class="nearby-card">
+      <div class="nearby-icon" style="background:${n.bg}">${n.emoji}</div>
+      <div>
+        <div class="nearby-name">${n.name}</div>
+        <div class="nearby-dist"><span class="dist-pill">${n.dist}</span>${n.cat}</div>
+      </div>
+    </div>`).join('');
+}
+
+async function filterShops() {
+  const q = document.getElementById('searchInput').value.trim();
+  const gov = document.getElementById('govSelect').value;
+  await loadShops(activeCategory, gov, q);
+}
+
+function toggleFav(e, id) {
+  e.stopPropagation();
+  if (favorites.has(id)) { favorites.delete(id); showToast('تمت الإزالة من المفضلة'); }
+  else { favorites.add(id); showToast('تمت الإضافة للمفضلة ❤️'); }
+  localStorage.setItem('favs', JSON.stringify([...favorites]));
+  renderShops(allShops);
+}
+
+async function openShop(id) {
+  const {data: s} = await sb.from('stores').select('*').eq('id', id).single();
+  const {data: prods} = await sb.from('products').select('*').eq('store_id', id).eq('active', true).limit(3);
+  if (!s) return;
+  const bg = BG_COLORS[0];
+  document.getElementById('modalContent').innerHTML = `
+    <div class="modal-thumb" style="background:${bg}">
+      ${CAT_EMOJIS[s.category]||'🏪'}
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-name">${s.name}</div>
+      <div class="modal-cat">${s.category||''}</div>
+      <div class="modal-info-row">📍 ${s.area||''}, ${s.governorate||''}</div>
+      <div class="modal-info-row">📞 ${s.phone||''}</div>
+      <div class="modal-info-row"><span style="color:var(--orange)">★★★★★</span> 4.8 &nbsp;<span class="badge badge-open">مفتوح الآن</span></div>
+      <hr class="modal-divider">
+      <div class="modal-desc">${s.description||'محل مسجّل في سوق أهلنا.'}</div>
+      ${prods && prods.length ? `
+        <div style="font-size:14px;font-weight:700;margin-bottom:10px;">منتجات مختارة</div>
+        <div class="products-mini">
+          ${prods.map(p=>`<div class="product-mini"><div class="product-mini-icon">${CAT_EMOJIS[p.category]||'📦'}</div><div class="product-mini-name">${p.name}</div><div class="product-mini-price">${Number(p.price).toLocaleString('ar-IQ')} د.ع</div></div>`).join('')}
+        </div>` : ''}
+      <div class="modal-actions">
+        <button class="btn-action btn-action-call" onclick="showToast('اتصال بـ ${s.name} 📞')">📞 اتصال</button>
+        <button class="btn-action btn-action-wa" onclick="window.open('https://wa.me/964${(s.whatsapp||s.phone||'').replace(/^0/,'')}','_blank')">💬 واتساب</button>
+      </div>
+      <button class="btn-view-shop" onclick="window.location.href='shop.html?id=${s.id}'">عرض صفحة المحل الكاملة ←</button>
+    </div>`;
+  document.getElementById('shopModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  // record view
+  sb.from('store_views').insert([{store_id:id}]).then(()=>{});
+}
+
+function closeModal() {
+  document.getElementById('shopModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.getElementById('shopModal').addEventListener('click', function(e){ if(e.target===this) closeModal(); });
+
+// AUTH
+function openAuthModal() { document.getElementById('authModal').classList.add('open'); document.body.style.overflow='hidden'; }
+function closeAuthModal() { document.getElementById('authModal').classList.remove('open'); document.body.style.overflow=''; }
+document.getElementById('authModal').addEventListener('click', function(e){ if(e.target===this) closeAuthModal(); });
+function authTab(tab) {
+  document.querySelectorAll('.auth-tab').forEach((t,i)=>t.classList.toggle('active',(i===0&&tab==='login')||(i===1&&tab==='signup')));
+  document.getElementById('loginForm').style.display = tab==='login'?'block':'none';
+  document.getElementById('signupForm').style.display = tab==='signup'?'block':'none';
+}
+async function doLogin() {
+  const btn=document.getElementById('loginBtn');
+  btn.disabled=true; btn.textContent='جارٍ الدخول...';
+  const {data,error} = await sb.auth.signInWithPassword({email:document.getElementById('loginEmail').value,password:document.getElementById('loginPass').value});
+  btn.disabled=false; btn.textContent='دخول';
+  if (error) { showToast('خطأ: '+error.message,'error'); return; }
+  showToast('مرحباً بك! 👋','success');
+  closeAuthModal();
+  setTimeout(()=>window.location.reload(),800);
+}
+async function doSignup() {
+  const btn=document.getElementById('signupBtn');
+  btn.disabled=true; btn.textContent='جارٍ الإنشاء...';
+  const {data,error} = await sb.auth.signUp({email:document.getElementById('signupEmail').value,password:document.getElementById('signupPass').value,options:{data:{full_name:document.getElementById('signupName').value}}});
+  btn.disabled=false; btn.textContent='إنشاء حساب';
+  if (error) { showToast('خطأ: '+error.message,'error'); return; }
+  showToast('تم إنشاء الحساب — تحقق من بريدك ✅','success');
+  closeAuthModal();
+}
+
+let toastTimer;
+function showToast(msg, type='') {
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.className='toast '+(type?type:'')+' show';
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>el.classList.remove('show'),2500);
+}
+</script>
+</body>
+</html>

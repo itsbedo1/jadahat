@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>سجّل محلك — سوق أهلنا</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--navy:#1A237E;--navy-dark:#0D1757;--orange:#FF9800;--orange-dark:#F57C00;--bg:#F5F6FA;--text:#1a1a2e;--text2:#555670;--text3:#9899B0;--border:#E2E3EF;--card:#ffffff;--radius:14px;--radius-sm:8px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);}
+.navbar{background:var(--navy);height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;position:sticky;top:0;z-index:100;}
+.nav-back{color:rgba(255,255,255,0.85);font-size:14px;cursor:pointer;display:flex;align-items:center;gap:6px;padding:6px 10px;border-radius:8px;text-decoration:none;}
+.nav-back:hover{background:rgba(255,255,255,0.1);}
+.nav-logo{color:#fff;font-size:16px;font-weight:700;}
+.nav-logo span{color:var(--orange);}
+.page-wrap{max-width:700px;margin:0 auto;padding:28px 16px 80px;}
+.reg-hero{text-align:center;padding:20px 0 28px;}
+.reg-icon{width:72px;height:72px;background:var(--navy);border-radius:20px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:32px;box-shadow:0 8px 24px rgba(26,35,126,0.25);}
+.reg-title{font-size:22px;font-weight:700;}
+.reg-sub{font-size:13px;color:var(--text3);margin-top:6px;line-height:1.6;}
+
+.plans-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:24px;}
+.plan-card{border:2px solid var(--border);border-radius:var(--radius);padding:14px 10px;text-align:center;cursor:pointer;background:#fff;transition:all 0.2s;position:relative;}
+.plan-card.selected{border-color:var(--navy);background:#EEF0FB;box-shadow:0 0 0 3px rgba(26,35,126,0.1);}
+.plan-pop{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--orange);color:#fff;font-size:10px;font-weight:700;padding:2px 10px;border-radius:10px;white-space:nowrap;}
+.plan-name{font-size:12px;font-weight:700;color:var(--text2);margin-top:4px;}
+.plan-price{font-size:16px;font-weight:800;color:var(--navy);margin:6px 0 2px;}
+.plan-period{font-size:9px;color:var(--text3);}
+.plan-feats{font-size:10px;color:var(--text3);line-height:1.7;margin-top:8px;}
+
+.form-sec{font-size:14px;font-weight:700;color:var(--text);margin:22px 0 12px;padding-right:12px;border-right:3px solid var(--orange);}
+.form-group{margin-bottom:14px;}
+.form-label{font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;display:block;}
+.form-input,.form-select,.form-textarea{width:100%;border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:11px 14px;font-size:14px;font-family:'Cairo',sans-serif;color:var(--text);background:var(--bg);outline:none;transition:border-color 0.2s;}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--navy);background:#fff;}
+.form-input::placeholder,.form-textarea::placeholder{color:var(--text3);font-size:13px;}
+.form-textarea{resize:none;line-height:1.6;}
+.form-select{appearance:none;cursor:pointer;}
+
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+
+.map-pick{border:1.5px dashed var(--navy);border-radius:var(--radius-sm);padding:20px;text-align:center;background:#EEF0FB;cursor:pointer;transition:all 0.2s;}
+.map-pick:active{background:#DDE0F5;}
+.map-pick-icon{font-size:28px;margin-bottom:8px;}
+.map-pick-txt{font-size:13px;color:var(--navy);font-weight:600;}
+.map-pick-sub{font-size:11px;color:var(--text3);margin-top:4px;}
+
+.img-upload{border:1.5px dashed var(--border);border-radius:var(--radius-sm);padding:24px;text-align:center;background:var(--bg);cursor:pointer;transition:background 0.2s;}
+.img-upload:hover{background:#fff;}
+.img-upload-icon{font-size:32px;margin-bottom:8px;color:var(--text3);}
+.img-upload-txt{font-size:13px;color:var(--text3);}
+
+.submit-btn{width:100%;background:var(--navy);color:#fff;border:none;border-radius:var(--radius-sm);padding:15px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Cairo',sans-serif;margin-top:12px;transition:all 0.2s;box-shadow:0 4px 14px rgba(26,35,126,0.2);}
+.submit-btn:hover{background:var(--navy-dark);}
+.submit-btn:disabled{opacity:0.6;cursor:not-allowed;}
+
+.already-have{text-align:center;margin-top:16px;font-size:13px;color:var(--text3);}
+.already-have a{color:var(--navy);font-weight:600;cursor:pointer;}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--navy);color:#fff;font-size:13px;padding:10px 20px;border-radius:20px;opacity:0;transition:all 0.3s;z-index:999;white-space:nowrap;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast.success{background:#2E7D32;}
+.toast.error{background:#B71C1C;}
+
+@media(max-width:580px){.form-row{grid-template-columns:1fr;}.plans-row{gap:6px;}.plan-price{font-size:13px;}}
+</style>
+</head>
+<body>
+<nav class="navbar">
+  <a class="nav-back" href="index.html">← الرئيسية</a>
+  <div class="nav-logo">سوق <span>أهلنا</span></div>
+  <div style="width:60px"></div>
+</nav>
+
+<div class="page-wrap">
+  <div class="reg-hero">
+    <div class="reg-icon">🏪</div>
+    <div class="reg-title">أنشئ واجهتك الرقمية</div>
+    <div class="reg-sub">سجّل محلك في سوق أهلنا واعرض منتجاتك لآلاف الزبائن في جميع محافظات العراق</div>
+  </div>
+
+  <!-- PLANS -->
+  <div class="form-sec">اختر الباقة المناسبة</div>
+  <div class="plans-row">
+    <div class="plan-card" id="plan-basic" onclick="selectPlan('basic')">
+      <div class="plan-name">أساسية</div>
+      <div class="plan-price">5,000</div>
+      <div class="plan-period">دينار / شهر</div>
+      <div class="plan-feats">5 منتجات<br>صفحة محل<br>موقع المحل</div>
+    </div>
+    <div class="plan-card selected" id="plan-pro" onclick="selectPlan('pro')">
+      <div class="plan-pop">الأكثر شعبية</div>
+      <div class="plan-name">احترافية</div>
+      <div class="plan-price">15,000</div>
+      <div class="plan-period">دينار / شهر</div>
+      <div class="plan-feats">30 منتج<br>إحصائيات<br>شارة مميزة</div>
+    </div>
+    <div class="plan-card" id="plan-premium" onclick="selectPlan('premium')">
+      <div class="plan-name">بريميم</div>
+      <div class="plan-price">35,000</div>
+      <div class="plan-period">دينار / شهر</div>
+      <div class="plan-feats">غير محدود<br>إعلان مميز<br>دعم أولوية</div>
+    </div>
+  </div>
+
+  <!-- SHOP INFO -->
+  <div class="form-sec">معلومات المحل</div>
+  <div class="form-group"><label class="form-label">اسم المحل *</label><input class="form-input" id="regName" type="text" placeholder="مثال: أزياء الرافدين"></div>
+  <div class="form-group"><label class="form-label">تصنيف المحل *</label>
+    <select class="form-select" id="regCat">
+      <option value="">اختر التصنيف</option>
+      <option>ملابس رجالية</option><option>ملابس نسائية</option><option>ملابس أطفال</option>
+      <option>أجهزة كهربائية</option><option>إلكترونيات</option><option>مواد منزلية</option>
+      <option>أثاث ومفروشات</option><option>أحذية وحقائب</option><option>عناية ومستحضرات</option>
+      <option>مطاعم</option><option>مخابز وحلويات</option><option>صيدليات</option>
+      <option>مجوهرات</option><option>سيارات وقطع غيار</option><option>مواد بناء</option>
+    </select>
+  </div>
+  <div class="form-row">
+    <div class="form-group"><label class="form-label">المحافظة *</label>
+      <select class="form-select" id="regGov">
+        <option value="">اختر</option>
+        <option>بغداد</option><option>البصرة</option><option>أربيل</option><option>النجف</option>
+        <option>كربلاء</option><option>الموصل</option><option>كركوك</option><option>السليمانية</option>
+        <option>ذي قار</option><option>ميسان</option><option>بابل</option><option>ديالى</option>
+        <option>الأنبار</option><option>واسط</option><option>المثنى</option><option>القادسية</option>
+        <option>صلاح الدين</option><option>دهوك</option>
+      </select>
+    </div>
+    <div class="form-group"><label class="form-label">المنطقة / الحي *</label><input class="form-input" id="regArea" type="text" placeholder="مثال: الكرادة"></div>
+  </div>
+  <div class="form-group"><label class="form-label">العنوان التفصيلي</label><input class="form-input" id="regAddress" type="text" placeholder="الشارع، المبنى، بجوار..."></div>
+
+  <!-- LOCATION -->
+  <div class="form-sec">موقع المحل على الخريطة</div>
+  <div class="map-pick" onclick="pickLocation()" id="mapPick">
+    <div class="map-pick-icon">📍</div>
+    <div class="map-pick-txt" id="mapTxt">اضغط لتحديد موقع المحل تلقائياً</div>
+    <div class="map-pick-sub">يساعد الزبائن في إيجادك بسهولة</div>
+  </div>
+
+  <!-- CONTACT -->
+  <div class="form-sec">معلومات التواصل</div>
+  <div class="form-row">
+    <div class="form-group"><label class="form-label">رقم الهاتف *</label><input class="form-input" id="regPhone" type="tel" placeholder="07xxxxxxxxx"></div>
+    <div class="form-group"><label class="form-label">واتساب</label><input class="form-input" id="regWhatsapp" type="tel" placeholder="07xxxxxxxxx"></div>
+  </div>
+  <div class="form-row">
+    <div class="form-group"><label class="form-label">انستغرام</label><input class="form-input" id="regInsta" type="text" placeholder="@username"></div>
+    <div class="form-group"><label class="form-label">أوقات العمل</label><input class="form-input" id="regHours" type="text" placeholder="9ص – 10م / السبت – خميس"></div>
+  </div>
+
+  <!-- DESC -->
+  <div class="form-sec">وصف المحل</div>
+  <div class="form-group"><textarea class="form-input" id="regDesc" rows="4" placeholder="اكتب وصفاً لمحلك، منتجاتك الرئيسية، ومزاياك..."></textarea></div>
+
+  <!-- ACCOUNT -->
+  <div class="form-sec">حساب التاجر</div>
+  <div class="form-group"><label class="form-label">اسمك الكامل *</label><input class="form-input" id="regFullName" type="text" placeholder="اسمك"></div>
+  <div class="form-group"><label class="form-label">البريد الإلكتروني *</label><input class="form-input" id="regEmail" type="email" placeholder="email@example.com"></div>
+  <div class="form-group"><label class="form-label">كلمة المرور *</label><input class="form-input" id="regPass" type="password" placeholder="٨ أحرف على الأقل"></div>
+
+  <button class="submit-btn" id="submitBtn" onclick="submitRegister()">🚀 إنشاء المحل الآن — مجاناً لأول شهر</button>
+  <div class="already-have">لديك حساب؟ <a onclick="window.location.href='dashboard.html'">سجّل دخولك هنا</a></div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script>
+const SUPABASE_URL = 'https://zmspznedsdgbzwzyvnoa.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inptc3B6bmVkc2RnYnp3enl2bm9hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5MDYzNzAsImV4cCI6MjA5MTQ4MjM3MH0.rC48GyFMbhZzoJu-_RSrGC57VbRqkY4YNMcacUUmE0k';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+function getParam(key) { return new URLSearchParams(window.location.search).get(key); }
+async function requireLogin(redirectBack = true) {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { window.location.href = 'index.html?login=1'; return null; }
+  return session.user;
+}
+async function getUserStore(userId) {
+  const { data } = await sb.from('stores').select('*').eq('user_id', userId).single();
+  return data;
+}
+</script>
+<script>
+let selectedPlan = 'pro';
+let locationCoords = null;
+
+window.addEventListener('DOMContentLoaded', async () => {
+  const {data:{session}} = await sb.auth.getSession();
+  if (session) {
+    document.getElementById('regEmail').value = session.user.email || '';
+    document.getElementById('regFullName').value = session.user.user_metadata?.full_name || '';
+    document.getElementById('regPass').closest('.form-group').style.opacity = '0.4';
+    document.getElementById('regPass').disabled = true;
+  }
+});
+
+function selectPlan(p) {
+  ['basic','pro','premium'].forEach(x=>document.getElementById('plan-'+x).classList.remove('selected'));
+  document.getElementById('plan-'+p).classList.add('selected');
+  selectedPlan = p;
+}
+
+function pickLocation() {
+  if (!navigator.geolocation) { showToast('المتصفح لا يدعم GPS'); return; }
+  showToast('جارٍ تحديد موقعك...');
+  navigator.geolocation.getCurrentPosition(pos => {
+    locationCoords = {lat: pos.coords.latitude, lng: pos.coords.longitude};
+    document.getElementById('mapTxt').textContent = `✅ تم التحديد (${locationCoords.lat.toFixed(4)}, ${locationCoords.lng.toFixed(4)})`;
+    document.getElementById('mapPick').style.background = '#E8F5E9';
+    showToast('تم تحديد موقعك ✅','success');
+  }, () => showToast('تعذر الوصول — تأكد من السماح بالموقع','error'));
+}
+
+async function submitRegister() {
+  const name = document.getElementById('regName').value.trim();
+  const cat = document.getElementById('regCat').value;
+  const gov = document.getElementById('regGov').value;
+  const area = document.getElementById('regArea').value.trim();
+  const phone = document.getElementById('regPhone').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const pass = document.getElementById('regPass').value;
+  const fullName = document.getElementById('regFullName').value.trim();
+  if (!name||!cat||!gov||!area||!phone||!email||!fullName) { showToast('يرجى تعبئة الحقول المطلوبة *','error'); return; }
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled=true; btn.textContent='جارٍ الإنشاء...';
+
+  let userId;
+  const {data:{session}} = await sb.auth.getSession();
+  if (session) {
+    userId = session.user.id;
+  } else {
+    if (!pass || pass.length < 8) { showToast('كلمة المرور يجب 8 أحرف على الأقل','error'); btn.disabled=false; btn.textContent='🚀 إنشاء المحل الآن'; return; }
+    const {data,error} = await sb.auth.signUp({email, password:pass, options:{data:{full_name:fullName}}});
+    if (error) { showToast('خطأ: '+error.message,'error'); btn.disabled=false; btn.textContent='🚀 إنشاء المحل الآن'; return; }
+    userId = data.user?.id;
+    if (!userId) { showToast('تحقق من بريدك الإلكتروني أولاً ✉️'); btn.disabled=false; btn.textContent='🚀 إنشاء المحل الآن'; return; }
+  }
+
+  const {data:store, error:storeErr} = await sb.from('stores').insert([{
+    user_id: userId, name, category: cat, governorate: gov, area,
+    address: document.getElementById('regAddress').value,
+    phone, whatsapp: document.getElementById('regWhatsapp').value,
+    instagram: document.getElementById('regInsta').value,
+    working_hours: document.getElementById('regHours').value,
+    description: document.getElementById('regDesc').value,
+    plan: selectedPlan, active: true,
+    lat: locationCoords?.lat, lng: locationCoords?.lng,
+  }]).select().single();
+
+  btn.disabled=false; btn.textContent='🚀 إنشاء المحل الآن';
+  if (storeErr) { showToast('خطأ: '+storeErr.message,'error'); return; }
+  showToast('تم إنشاء محلك بنجاح! 🎉','success');
+  setTimeout(()=>window.location.href='dashboard.html',1200);
+}
+
+let toastTimer;
+function showToast(msg, type='') {
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.className='toast '+(type||'')+' show';
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>el.classList.remove('show'),2800);
+}
+</script>
+</body>
+</html>
